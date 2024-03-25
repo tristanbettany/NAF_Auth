@@ -1,0 +1,13 @@
+src/node_modules
+src/vendor
+.env
+.phpunit.result.cache
+.idea
+Thumbs.db
+.DS_Store
+desktop.ini
+.vscode
+src/public/css/site.css.map
+src/public/css/site.css
+containers/web/certs/*.crt
+containers/web/certs/*.key

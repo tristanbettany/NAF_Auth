@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  dns:
+    container_name: dns
+    build:
+      context: ./containers/dns
+    restart: 'always'
+    ports:
+      - "53:53/udp"
+      - 5353:8080
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.20
+
+  node:
+    container_name: node
+    image: node:lts
+    working_dir: /app
+    restart: 'always'
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    volumes:
+      - ./src:/app
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.30
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog:latest
+    restart: 'always'
+    ports:
+      - 1025:1025
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.40
+
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    restart: 'always'
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./src:/app
+      - mysql:/var/lib/mysql
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.50
+
+  php:
+    container_name: php
+    build:
+      context: ./containers/php
+    restart: 'always'
+    working_dir: /app
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CHARSET=${DB_CHARSET}
+      - SENTRY_DSN=${SENTRY_DSN}
+    volumes:
+      - ${SSH_DIR}:/ssh:ro
+      - ./src:/app
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.60
+
+  web:
+    container_name: web
+    image: nginx:latest
+    restart: 'always'
+    working_dir: /app
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./containers/web/nginx.conf:/etc/nginx/nginx.conf
+      - ./containers/web/certs:/etc/nginx/certs
+      - ./src:/app
+    networks:
+      skynet:
+        ipv4_address: 10.0.10.70
+
+networks:
+  skynet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      config:
+        - subnet: 10.0.10.0/24
+
+volumes:
+  mysql:
