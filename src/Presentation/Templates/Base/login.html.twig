@@ -2,10 +2,17 @@
 
 {% block body %}
     <div class="mt-50px">
-        <h1 class="text-40px">NAF Login</h1>
+        <h1 class="text-40px">Email Login</h1>
         <form action="/login" method="post" class="mt-20px">
             <input name="email" type="text" placeholder="Email" />
             <input name="password" type="password" placeholder="Password" />
+            <input type="submit" value="Login" class="bg-sky-500 px-20px py-9px text-white" />
+        </form>
+    </div>
+
+    <div class="mt-50px">
+        <h1 class="text-40px">Okta Login</h1>
+        <form action="https://dev-64657975.okta.com/app/dev-64657975_phptest_1/exkg0irbq1NhT6USo5d7/sso/saml" method="get" class="mt-20px">
             <input type="submit" value="Login" class="bg-sky-500 px-20px py-9px text-white" />
         </form>
     </div>

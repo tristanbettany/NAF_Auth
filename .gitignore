@@ -11,3 +11,4 @@ src/public/css/site.css.map
 src/public/css/site.css
 containers/web/certs/*.crt
 containers/web/certs/*.key
+*.cert

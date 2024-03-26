@@ -31,5 +31,5 @@ An implementation of a selection of authentication platforms built on the NAF sy
 - Create a database with the details you put in the .env before
 - Run `./app terminal php` to get a command line in the php container
 - In the php container run `./cli migrations:migrate && ./cli db:seed`, then exit to the host
-- Now point your primary dns in your computer to `127.0.0.1` and your secondary dns to a public dns server
+- Now change your hosts file to point `na.test` and `www.na.test` to `127.0.0.1` (If you don't have the ability to change your hosts file you may need to run a dns container or proxy container)
 - In your browser visit `na.test`
