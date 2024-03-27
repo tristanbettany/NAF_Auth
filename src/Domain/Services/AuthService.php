@@ -2,19 +2,75 @@
 
 namespace Domain\Services;
 
+use Application\Exceptions\NoDataToHydrateException;
+use Application\Exceptions\SamlException;
 use Application\Exceptions\ValidationException;
 use Database\Entities\UserEntity;
 use Database\Interfaces\UserRepositoryInterface;
 use Domain\Interfaces\AuthServiceInterface;
+use Domain\Interfaces\SamlServiceInterface;
 use Domain\Interfaces\SessionInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 
 final class AuthService implements AuthServiceInterface
 {
     public function __construct(
         private SessionInterface $session,
+        private SamlServiceInterface $samlService,
         private UserRepositoryInterface $userRepository
     ) {
+    }
+
+    public function samlLogin(ServerRequestInterface $request): bool
+    {
+        $saml = $this->samlService->getSAMLFromRequest($request);
+
+        try {
+            $isSigned = $this->samlService->verifySignedSAML($saml);
+            if ($isSigned === false) {
+                throw new SamlException('Failed to verify SAML signature');
+            }
+        } catch (\Exception $e) {
+            throw new SamlException('Failed to verify SAML signature : ' . $e->getMessage());
+        }
+
+        $attributeStatements = $this->samlService->getAttributeStatementsFromSAML($saml);
+
+        // TODO: this could be a check on a comma seperated env var of expected attributes
+        if (
+            empty($attributeStatements['id']) === true
+            || empty($attributeStatements['email']) === true
+            || empty($attributeStatements['firstName']) === true
+            || empty($attributeStatements['lastName']) === true
+        ) {
+            return false;
+        }
+
+        // TODO: given the above todo, attributes used to create and query the user should be env vars
+        // such that the attributes can be named what the user wants in the sso platform with no hard coding
+        try {
+            $userEntity = $this->userRepository->findBySSOID($attributeStatements['id']);
+        } catch (NoDataToHydrateException $e) {
+            $userId = $this->userRepository->create(
+                $attributeStatements['firstName'],
+                $attributeStatements['lastName'],
+                $attributeStatements['email'],
+                $this->hashPassword(uniqid() . Uuid::uuid4()->toString() . uniqid()),
+                $attributeStatements['id']
+            );
+            $userEntity = $this->userRepository->findByID($userId);
+        }
+
+        if ($attributeStatements['email'] !== $userEntity->email) {
+            return false;
+        }
+
+        $this->session->set('auth', true);
+        $this->session->set('auth-uuid', $userEntity->uuid);
+        $this->session->set('auth-is-admin', $userEntity->isAdmin);
+
+        return true;
     }
 
     public function login(

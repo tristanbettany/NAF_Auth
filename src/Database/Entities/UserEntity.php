@@ -13,6 +13,7 @@ final class UserEntity extends AbstractEntity
     public int $id;
 
     public string $uuid;
+    public string $ssoId;
 
     public string $firstName;
     public string $lastName;

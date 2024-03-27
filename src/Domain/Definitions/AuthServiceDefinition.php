@@ -4,6 +4,7 @@ namespace Domain\Definitions;
 
 use Database\Interfaces\UserRepositoryInterface;
 use Domain\Interfaces\AuthServiceInterface;
+use Domain\Interfaces\SamlServiceInterface;
 use Domain\Interfaces\SessionInterface;
 use Domain\Services\AuthService;
 use Infrastructure\Abstractions\AbstractDefinition;
@@ -17,6 +18,7 @@ final class AuthServiceDefinition extends AbstractDefinition
             AuthServiceInterface::class => function (ContainerInterface $container) {
                 return new AuthService(
                     $container->get(SessionInterface::class),
+                    $container->get(SamlServiceInterface::class),
                     $container->get(UserRepositoryInterface::class)
                 );
             },

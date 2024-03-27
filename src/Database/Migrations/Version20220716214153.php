@@ -21,6 +21,7 @@ final class Version20220716214153 extends AbstractMigration
             CREATE TABLE IF NOT EXISTS `". UserEntity::TABLE ."` (
                 `id` bigint unsigned NOT NULL AUTO_INCREMENT,
                 `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                `sso_id` varchar(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
                 `first_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,

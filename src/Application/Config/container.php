@@ -5,6 +5,7 @@ use Domain\Definitions\RootServiceDefinition;
 use Presentation\Definitions\RespondersDefinition;
 use Domain\Definitions\AppDefinition;
 use Domain\Definitions\AuthServiceDefinition;
+use Domain\Definitions\SamlServiceDefinition;
 
 return [
     'definitions' => [
@@ -13,5 +14,6 @@ return [
         AppDefinition::class,
         RootServiceDefinition::class,
         AuthServiceDefinition::class,
+        SamlServiceDefinition::class,
     ],
 ];
