@@ -4,6 +4,7 @@ namespace Domain\Services;
 
 use Application\Exceptions\SamlException;
 use Domain\Interfaces\SamlServiceInterface;
+use Infrastructure\Facades\Config;
 use Psr\Http\Message\ServerRequestInterface;
 use RobRichards\XMLSecLibs\XMLSecurityDSig;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
@@ -35,8 +36,7 @@ final class SamlService implements SamlServiceInterface
 
     public function verifySignedSAML(string $saml): bool
     {
-        // TODO: Key path need to be env var
-        $key = $this->loadKey(__DIR__ . '/../../okta.cert');
+        $key = $this->loadKey(__DIR__ . '/../../' . Config::get('sso.cert_file_name'));
         $dom = $this->loadDOMFromSAML($saml);
 
         $signature = $this->loadSignature($dom);

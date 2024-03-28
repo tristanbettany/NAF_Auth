@@ -14,6 +14,7 @@ final class LoginResponder extends AbstractResponder implements LoginResponderIn
     {
         return new TwigTemplateResponse(
             '@Base/login.html.twig',
+            $data ?? []
         );
     }
 
@@ -25,6 +26,7 @@ final class LoginResponder extends AbstractResponder implements LoginResponderIn
 
         return new TwigTemplateResponse(
             '@Base/login.html.twig',
+            $data ?? []
         );
     }
 }

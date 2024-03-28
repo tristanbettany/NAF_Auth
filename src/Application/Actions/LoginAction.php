@@ -6,6 +6,7 @@ use Domain\Interfaces\RootServiceInterface;
 use Domain\Interfaces\SamlServiceInterface;
 use Infrastructure\Abstractions\AbstractAction;
 use Infrastructure\Facades\Auth;
+use Infrastructure\Facades\Config;
 use Presentation\Interfaces\LoginResponderInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,7 +21,9 @@ final class LoginAction extends AbstractAction
 
     public function get(): ResponseInterface
     {
-        return $this->respond($this->responder);
+        return $this->respond($this->responder, [
+            'ssoLoginUrl' => Config::get('sso.login_url'),
+        ]);
     }
 
     public function post(): ResponseInterface

@@ -13,6 +13,7 @@ final class DashboardResponder extends AbstractResponder implements DashboardRes
     {
         return new TwigTemplateResponse(
             '@Base/dashboard.html.twig',
+            $data ?? []
         );
     }
 }

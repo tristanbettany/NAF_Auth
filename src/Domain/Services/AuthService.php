@@ -10,6 +10,7 @@ use Database\Interfaces\UserRepositoryInterface;
 use Domain\Interfaces\AuthServiceInterface;
 use Domain\Interfaces\SamlServiceInterface;
 use Domain\Interfaces\SessionInterface;
+use Infrastructure\Facades\Config;
 use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -37,27 +38,24 @@ final class AuthService implements AuthServiceInterface
 
         $attributeStatements = $this->samlService->getAttributeStatementsFromSAML($saml);
 
-        // TODO: this could be a check on a comma seperated env var of expected attributes
         if (
-            empty($attributeStatements['id']) === true
-            || empty($attributeStatements['email']) === true
-            || empty($attributeStatements['firstName']) === true
-            || empty($attributeStatements['lastName']) === true
+            empty($attributeStatements[Config::get('sso.attribute_names.id')]) === true
+            || empty($attributeStatements[Config::get('sso.attribute_names.email')]) === true
+            || empty($attributeStatements[Config::get('sso.attribute_names.firstName')]) === true
+            || empty($attributeStatements[Config::get('sso.attribute_names.lastName')]) === true
         ) {
             return false;
         }
 
-        // TODO: given the above todo, attributes used to create and query the user should be env vars
-        // such that the attributes can be named what the user wants in the sso platform with no hard coding
         try {
             $userEntity = $this->userRepository->findBySSOID($attributeStatements['id']);
         } catch (NoDataToHydrateException $e) {
             $userId = $this->userRepository->create(
-                $attributeStatements['firstName'],
-                $attributeStatements['lastName'],
-                $attributeStatements['email'],
+                Config::get('sso.attribute_names.firstName'),
+                Config::get('sso.attribute_names.lastName'),
+                Config::get('sso.attribute_names.email'),
                 $this->hashPassword(uniqid() . Uuid::uuid4()->toString() . uniqid()),
-                $attributeStatements['id']
+                Config::get('sso.attribute_names.id')
             );
             $userEntity = $this->userRepository->findByID($userId);
         }
