@@ -19,6 +19,8 @@ An implementation of a selection of authentication platforms built on the NAF sy
 
 ### Pre-requisits
 
+- Clone the repo, and your on windows, change the line endings of the `cli` file in the src folder to LF
+- If your using git bash for windows you may also want to change the line endings of the `app` command in the root to LF also  
 - Install mkcert from here https://github.com/FiloSottile/mkcert
 - Install the certificate for development like so `mkcert -install`
 - Navigate to the certs directory in the containers directory of this project and generate the projects certs `mkcert -cert-file crt.crt -key-file key.key na.test www.na.test`

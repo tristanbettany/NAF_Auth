@@ -51,16 +51,16 @@ final class AuthService implements AuthServiceInterface
             $userEntity = $this->userRepository->findBySSOID($attributeStatements['id']);
         } catch (NoDataToHydrateException $e) {
             $userId = $this->userRepository->create(
-                Config::get('sso.attribute_names.firstName'),
-                Config::get('sso.attribute_names.lastName'),
-                Config::get('sso.attribute_names.email'),
+                $attributeStatements[Config::get('sso.attribute_names.firstName')],
+                $attributeStatements[Config::get('sso.attribute_names.lastName')],
+                $attributeStatements[Config::get('sso.attribute_names.email')],
                 $this->hashPassword(uniqid() . Uuid::uuid4()->toString() . uniqid()),
-                Config::get('sso.attribute_names.id')
+                $attributeStatements[Config::get('sso.attribute_names.id')]
             );
             $userEntity = $this->userRepository->findByID($userId);
         }
 
-        if ($attributeStatements['email'] !== $userEntity->email) {
+        if ($attributeStatements[Config::get('sso.attribute_names.email')] !== $userEntity->email) {
             return false;
         }
 
